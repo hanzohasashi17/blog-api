@@ -4,16 +4,16 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/hanzohasashi17/blog-api/internal/models"
+	// "github.com/hanzohasashi17/blog-api/internal/models"
 	"github.com/hanzohasashi17/blog-api/internal/storage/sqlite"
 )
 
 type IPostRepository interface {
 	Create(title string, content string, author string) (int64, error)
-	GetAll() ([]models.Post, error)
-	GetById(id int) (*models.Post, error)
-	Update(id int) error
-	Delete(id int) error
+	// GetAll() ([]models.Post, error)
+	// GetById(id int) (*models.Post, error)
+	// Update(id int) error
+	// Delete(id int) error
 }
 
 type PostRepository struct {
@@ -45,18 +45,18 @@ func (r *PostRepository) Create(title string, content string, author string) (in
 	return id, nil
 }
 
-func (r *PostRepository) GetAll() ([]models.Post, error) {
-	op := "repository.post.GetAll"
+// func (r *PostRepository) GetAll() ([]models.Post, error) {
+// 	op := "repository.post.GetAll"
 
-	posts, err := r.db.Query("SELECT * FROM posts")
-	if err != nil {
-		return nil, fmt.Errorf("%s: %w", op, err)
-	}
-	defer posts.Close()
+// 	posts, err := r.db.Query("SELECT * FROM posts")
+// 	if err != nil {
+// 		return nil, fmt.Errorf("%s: %w", op, err)
+// 	}
+// 	defer posts.Close()
 
-	posts.
-	if err != nil {
-		return nil, fmt.Errorf("%s: %w", op, err)
-	}
+// 	posts.
+// 	if err != nil {
+// 		return nil, fmt.Errorf("%s: %w", op, err)
+// 	}
 
-}
+// }

@@ -7,6 +7,14 @@ import (
 	"github.com/hanzohasashi17/blog-api/internal/models"
 )
 
+type IPostService interface {
+	CreatePost(title string, content string, author string) (int64, error)
+	// GetAll() ([]models.Post, error)
+	// GetById(id int) (*models.Post, error)
+	// Update(id int) error
+	// Delete(id int) error
+}
+
 func CreatePostHandler(s IPostService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var newPost models.Post

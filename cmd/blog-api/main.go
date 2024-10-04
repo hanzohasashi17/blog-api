@@ -37,6 +37,10 @@ func main() {
 
 	r.Route("/posts", func(r chi.Router) {
 		r.Post("/", handler.CreatePostHandler(postService))
+		r.Get("/", handler.GetAllPostHandler(postService))
+		r.Get("/{id}", handler.GetPostByIdHandler(postService))
+		r.Put("/", handler.UpdatePostHandler(postService))
+		r.Delete("/{id}", handler.DeletePostHandler(postService))
 	})
 
 	log.Info("Server run on 8080 port...")

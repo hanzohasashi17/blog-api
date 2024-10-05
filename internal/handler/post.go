@@ -8,18 +8,27 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-playground/validator/v10"
 	"github.com/hanzohasashi17/blog-api/internal/models"
 	"github.com/hanzohasashi17/blog-api/internal/services"
 )
 
-// type PostHandler struct {
-// 	service services.IPostService
-// }
+var validate *validator.Validate
+
+func init() {
+	validate = validator.New()
+}
 
 func CreatePostHandler(s services.IPostService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+
 		var newPost models.Post
 		if err := json.NewDecoder(r.Body).Decode(&newPost); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		if err := validate.Struct(newPost); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
@@ -89,17 +98,18 @@ func GetPostByIdHandler(s services.IPostService) http.HandlerFunc {
 	}
 }
 
-func UpdatePostHandler(s services.IPostService) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		var post models.Post
 
-		err := json.NewDecoder(r.Body).Decode(&post)
-		if err != nil {
-			http.Error(w, "Post not found", http.StatusNotFound)
-            return
+func GetPostByAuthorHandler(s services.IPostService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		
+		author := chi.URLParam(r, "author")
+		if author == "" {
+			http.Error(w, "Author not found", http.StatusBadRequest)
+			return
 		}
 
-		if err := s.UpdatePost(post); err != nil {
+		posts, err := s.GetPostByAuthor(author)
+		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
                 http.Error(w, "Post not found", http.StatusNotFound)
             } else {
@@ -108,7 +118,35 @@ func UpdatePostHandler(s services.IPostService) http.HandlerFunc {
             return
 		}
 
-		json.NewEncoder(w).Encode(post)
+		json.NewEncoder(w).Encode(posts)
+	}
+}
+
+func UpdatePostHandler(s services.IPostService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var updatedPost models.Post
+
+		err := json.NewDecoder(r.Body).Decode(&updatedPost)
+		if err != nil {
+			http.Error(w, "Post not found", http.StatusNotFound)
+            return
+		}
+
+		if err := validate.Struct(updatedPost); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		if err := s.UpdatePost(updatedPost); err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+                http.Error(w, "Post not found", http.StatusNotFound)
+            } else {
+                http.Error(w, "Internal server error", http.StatusInternalServerError)
+            }
+            return
+		}
+
+		json.NewEncoder(w).Encode(updatedPost)
 	}
 }
 

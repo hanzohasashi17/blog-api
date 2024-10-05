@@ -9,6 +9,7 @@ type IPostService interface {
 	CreatePost(title string, content string, author string) (int64, error)
 	GetAllPost(page, pageSize int) ([]models.Post, error)
 	GetPostById(id int) (*models.Post, error)
+	GetPostByAuthor(author string) ([]models.Post, error)
 	UpdatePost(post models.Post) error
 	DeletePost(id int) error
 }
@@ -31,6 +32,10 @@ func (s *PostService) GetAllPost(page, pageSize int) ([]models.Post, error) {
 
 func (s *PostService) GetPostById(id int) (*models.Post, error) {
 	return s.repo.GetById(id)
+}
+
+func (s *PostService) GetPostByAuthor(author string) ([]models.Post, error) {
+	return s.repo.GetByAuthor(author)
 }
 
 func (s *PostService) UpdatePost(post models.Post) error {

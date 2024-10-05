@@ -9,14 +9,20 @@ GET http://localhost:8080/posts?page=2 HTTP/1.1
 
 GET http://localhost:8080/posts/22 HTTP/1.1
 
+
+###
+
+GET http://localhost:8080/posts/another author HTTP/1.1
+
+
 ###
 
 POST http://localhost:8080/posts HTTP/1.1
 content-type: application/json
 
 {
-    "title": "some title",
-    "content": "some content",
+    "title": "some juice",
+    "content": "any content",
     "author": "another author"
 }
 
@@ -27,7 +33,7 @@ content-type: application/json
 
 {
     "id": 4,
-    "title": "4 post updated",
+    "title": "4",
     "content": "updated content",
     "author": "updated author"
 }

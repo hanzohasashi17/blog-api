@@ -13,6 +13,7 @@ type IPostRepository interface {
 	Create(title string, content string, author string) (int64, error)
 	GetAll(page, pageSize int) ([]models.Post, error)
 	GetById(id int) (*models.Post, error)
+	GetByAuthor(author string) ([]models.Post, error)
 	Update(post models.Post) error
 	Delete(id int) error
 }
@@ -87,6 +88,30 @@ func (r *postRepository) GetById(id int) (*models.Post, error) {
 	}
 
 	return &post, nil
+}
+
+func (r *postRepository) GetByAuthor(author string) ([]models.Post, error) {
+	op := "repository.post.GetByAuthor"
+
+	rows, err := r.db.Query("SELECT * FROM posts WHERE author = ?", author)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+	defer rows.Close()
+
+	var posts []models.Post
+	for rows.Next() {
+		var post models.Post
+		if err := rows.Scan(&post.Id, &post.Title, &post.Content, &post.Author, &post.CreatedAt); err != nil {
+			return nil, fmt.Errorf("%s: %w", op, err)
+		}
+		posts = append(posts, post)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+
+	return posts, nil
 }
 
 func (r *postRepository) Update(post models.Post) error {

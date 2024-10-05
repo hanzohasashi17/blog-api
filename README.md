@@ -29,10 +29,10 @@ TO CHECKING HANDLERS USE folder "./rest-client"
 
 структура posts
 
-CREATE TABLE posts (/n
-    id INTEGER PRIMARY KEY AUTOINCREMENT,/n
-    title TEXT NOT NULL,/n
-    content TEXT NOT NULL,/n
-    author TEXT NOT NULL,/n
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP/n
+CREATE TABLE posts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    content TEXT NOT NULL,
+    author TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );

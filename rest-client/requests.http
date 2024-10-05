@@ -1,0 +1,32 @@
+GET http://localhost:8080/posts HTTP/1.1
+
+###
+
+GET http://localhost:8080/posts/2 HTTP/1.1
+
+###
+
+POST http://localhost:8080/posts HTTP/1.1
+content-type: application/json
+
+{
+    "title": "some title",
+    "content": "some content",
+    "author": "another author"
+}
+
+###
+
+PUT http://localhost:8080/posts HTTP/1.1
+content-type: application/json
+
+{
+    "id": 4,
+    "title": "4 post updated",
+    "content": "updated content",
+    "author": "updated author"
+}
+
+###
+
+DELETE http://localhost:8080/posts/3 HTTP/1.1

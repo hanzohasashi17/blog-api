@@ -36,7 +36,26 @@ func CreatePostHandler(s services.IPostService) http.HandlerFunc {
 
 func GetAllPostHandler(s services.IPostService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		posts, err := s.GetAllPost()
+
+		pageStr := r.URL.Query().Get("page")
+		page, err := strconv.Atoi(pageStr)
+		if err != nil {
+			http.Error(w, "Invalid page number", http.StatusBadRequest)
+			return
+		}
+
+		pageSizeStr := r.URL.Query().Get("page_size")
+		if pageSizeStr == "" {
+			pageSizeStr = "10"
+		}
+
+		pageSize, err := strconv.Atoi(pageSizeStr)
+		if err != nil || pageSize < 0 {
+			http.Error(w, "Invalid page size", http.StatusBadRequest)
+			return
+		}
+
+		posts, err := s.GetAllPost(page, pageSize)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

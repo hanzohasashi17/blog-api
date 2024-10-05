@@ -11,7 +11,7 @@ import (
 
 type IPostRepository interface {
 	Create(title string, content string, author string) (int64, error)
-	GetAll() ([]models.Post, error)
+	GetAll(page, pageSize int) ([]models.Post, error)
 	GetById(id int) (*models.Post, error)
 	Update(post models.Post) error
 	Delete(id int) error
@@ -46,10 +46,12 @@ func (r *postRepository) Create(title string, content string, author string) (in
 	return id, nil
 }
 
-func (r *postRepository) GetAll() ([]models.Post, error) {
+func (r *postRepository) GetAll(page, pageSize int) ([]models.Post, error) {
 	op := "repository.post.GetAll"
 
-	rows, err := r.db.Query("SELECT * FROM posts")
+	offset := (page - 1) * pageSize
+
+	rows, err := r.db.Query("SELECT * FROM posts LIMIT ? OFFSET ?", pageSize, offset)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}

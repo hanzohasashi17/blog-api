@@ -1,8 +1,13 @@
-GET http://localhost:8080/posts HTTP/1.1
+GET http://localhost:8080/posts?page=1&page_size=10 HTTP/1.1
 
 ###
 
-GET http://localhost:8080/posts/2 HTTP/1.1
+GET http://localhost:8080/posts?page=2 HTTP/1.1
+
+
+###
+
+GET http://localhost:8080/posts/22 HTTP/1.1
 
 ###
 
@@ -29,4 +34,4 @@ content-type: application/json
 
 ###
 
-DELETE http://localhost:8080/posts/3 HTTP/1.1
+DELETE http://localhost:8080/posts/23 HTTP/1.1

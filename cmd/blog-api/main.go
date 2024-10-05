@@ -39,7 +39,7 @@ func main() {
 		r.Post("/", handler.CreatePostHandler(postService))
 		r.Get("/", handler.GetAllPostHandler(postService))
 		r.Get("/{id}", handler.GetPostByIdHandler(postService))
-		r.Get("/{author}", handler.GetPostByAuthorHandler(postService))
+		r.Get("/", handler.GetPostByAuthorHandler(postService))
 		r.Put("/", handler.UpdatePostHandler(postService))
 		r.Delete("/{id}", handler.DeletePostHandler(postService))
 	})

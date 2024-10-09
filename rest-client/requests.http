@@ -1,4 +1,4 @@
-GET http://localhost:8080/posts?page=1&page_size=10 HTTP/1.1
+GET http://localhost:8080/posts?page=1&page_size=15 HTTP/1.1
 
 ###
 
@@ -12,7 +12,7 @@ GET http://localhost:8080/posts/22 HTTP/1.1
 
 ###
 
-GET http://localhost:8080/posts?author=another author HTTP/1.1
+GET http://localhost:8080/posts/another author HTTP/1.1
 
 
 ###
@@ -21,9 +21,9 @@ POST http://localhost:8080/posts HTTP/1.1
 content-type: application/json
 
 {
-    "title": "some juice",
+    "title": "some",
     "content": "any content",
-    "author": "another author"
+    "author": "author"
 }
 
 ###

@@ -7,10 +7,10 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/hanzohasashi17/blog-api/internal/config"
-	"github.com/hanzohasashi17/blog-api/internal/handler"
-	"github.com/hanzohasashi17/blog-api/internal/repository"
+	"github.com/hanzohasashi17/blog-api/internal/handlers"
+	"github.com/hanzohasashi17/blog-api/internal/repositories"
 	"github.com/hanzohasashi17/blog-api/internal/services"
-	"github.com/hanzohasashi17/blog-api/internal/storage/sqlite"
+	"github.com/hanzohasashi17/blog-api/internal/database/sqlite"
 	"github.com/hanzohasashi17/blog-api/lib/logger/sl"
 )
 
@@ -22,14 +22,14 @@ func main() {
 	log := sl.SetupLogger()
 
 	// run database && migration
-	storage, err := sqlite.New(cfg.StoragePath)
+	db, err := sqlite.New(cfg.StoragePath)
 	if err != nil {
 		log.Error("failed to init storage", sl.Err(err))
 		os.Exit(1)
 	}
-	defer storage.Db.Close()
+	defer db.Db.Close()
 
-	postRepository := repository.NewPostRepository(storage)
+	postRepository := repositories.NewPostRepository(db)
 	postService := services.NewPostService(postRepository)
 
 	r := chi.NewRouter()
@@ -39,7 +39,7 @@ func main() {
 		r.Post("/", handler.CreatePostHandler(postService))
 		r.Get("/", handler.GetAllPostHandler(postService))
 		r.Get("/{id}", handler.GetPostByIdHandler(postService))
-		r.Get("/", handler.GetPostByAuthorHandler(postService))
+		r.Get("/{author}", handler.GetPostByAuthorHandler(postService))
 		r.Put("/", handler.UpdatePostHandler(postService))
 		r.Delete("/{id}", handler.DeletePostHandler(postService))
 	})

@@ -102,7 +102,7 @@ func GetPostByIdHandler(s services.IPostService) http.HandlerFunc {
 func GetPostByAuthorHandler(s services.IPostService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		
-		author := r.URL.Query().Get("author")
+		author := chi.URLParam(r, "author")
 		if author == "" {
 			http.Error(w, "Author not found", http.StatusBadRequest)
 			return

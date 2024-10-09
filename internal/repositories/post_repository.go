@@ -1,4 +1,4 @@
-package repository
+package repositories
 
 import (
 	"database/sql"
@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	"github.com/hanzohasashi17/blog-api/internal/models"
-	"github.com/hanzohasashi17/blog-api/internal/storage/sqlite"
+	"github.com/hanzohasashi17/blog-api/internal/database/sqlite"
 )
 
 type IPostRepository interface {
@@ -22,12 +22,12 @@ type postRepository struct {
 	db *sql.DB
 }
 
-func NewPostRepository(storage *sqlite.Storage) *postRepository {
-	return &postRepository{db: storage.Db}
+func NewPostRepository(db *sqlite.Database) *postRepository {
+	return &postRepository{db: db.Db}
 }
 
 func (r *postRepository) Create(title string, content string, author string) (int64, error) {
-	op := "repository.post.Create"
+	op := "repositories.post.Create"
 
 	stmt, err := r.db.Prepare("INSERT INTO posts(title, content, author) VALUES(?, ?, ?)")
 	if err != nil {
@@ -48,7 +48,7 @@ func (r *postRepository) Create(title string, content string, author string) (in
 }
 
 func (r *postRepository) GetAll(page, pageSize int) ([]models.Post, error) {
-	op := "repository.post.GetAll"
+	op := "repositories.post.GetAll"
 
 	offset := (page - 1) * pageSize
 
@@ -74,7 +74,7 @@ func (r *postRepository) GetAll(page, pageSize int) ([]models.Post, error) {
 }
 
 func (r *postRepository) GetById(id int) (*models.Post, error) {
-	op := "repository.post.GetById"
+	op := "repositories.post.GetById"
 
 	var post models.Post
 
@@ -91,7 +91,7 @@ func (r *postRepository) GetById(id int) (*models.Post, error) {
 }
 
 func (r *postRepository) GetByAuthor(author string) ([]models.Post, error) {
-	op := "repository.post.GetByAuthor"
+	op := "repositories.post.GetByAuthor"
 
 	rows, err := r.db.Query("SELECT * FROM posts WHERE author = ?", author)
 	if err != nil {
@@ -115,7 +115,7 @@ func (r *postRepository) GetByAuthor(author string) ([]models.Post, error) {
 }
 
 func (r *postRepository) Update(post models.Post) error {
-	op := "repository.post.Update"
+	op := "repositories.post.Update"
 
 	res, err := r.db.Exec("UPDATE posts SET title=?, content=?, author=? WHERE id=?", post.Title, post.Content, post.Author, post.Id)
 	if err != nil {
@@ -135,7 +135,7 @@ func (r *postRepository) Update(post models.Post) error {
 }
 
 func (r *postRepository) Delete(id int) error {
-	op := "repository.post.Delete"
+	op := "repositories.post.Delete"
 
 	res, err := r.db.Exec("DELETE FROM posts WHERE id = ?", id)
 	if err != nil {

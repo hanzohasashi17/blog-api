@@ -10,12 +10,12 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-type Storage struct {
+type Database struct {
 	Db *sql.DB
 }
 
-func New(storagePath string) (*Storage, error) {
-	const op = "storage.sqlite.New"
+func New(storagePath string) (*Database, error) {
+	const op = "database.sqlite.New"
 
 	db, err := sql.Open("sqlite", storagePath)
 	if err != nil {
@@ -26,11 +26,11 @@ func New(storagePath string) (*Storage, error) {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
-	return &Storage{Db: db}, nil
+	return &Database{Db: db}, nil
 }
 
 func Migrate(db *sql.DB) error {
-	const op = "storage.sqlite.Migrate"
+	const op = "database.sqlite.Migrate"
 
 	driver, err := sqlite.WithInstance(db, &sqlite.Config{})
 	if err != nil {
@@ -38,7 +38,7 @@ func Migrate(db *sql.DB) error {
 	}
 
 	m, err := migrate.NewWithDatabaseInstance(
-        "file://internal/storage/migrations",
+        "file://migrations",
         "sqlite", 
 		driver,
 	)

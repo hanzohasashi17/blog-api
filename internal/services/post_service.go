@@ -2,7 +2,7 @@ package services
 
 import (
 	"github.com/hanzohasashi17/blog-api/internal/models"
-	"github.com/hanzohasashi17/blog-api/internal/repository"
+	"github.com/hanzohasashi17/blog-api/internal/repositories"
 )
 
 type IPostService interface {
@@ -15,10 +15,10 @@ type IPostService interface {
 }
 
 type PostService struct {
-	repo repository.IPostRepository
+	repo repositories.IPostRepository
 }
 
-func NewPostService(repo repository.IPostRepository) *PostService {
+func NewPostService(repo repositories.IPostRepository) *PostService {
 	return &PostService{repo: repo}
 }
 

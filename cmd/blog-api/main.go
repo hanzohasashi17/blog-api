@@ -7,10 +7,10 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/hanzohasashi17/blog-api/internal/config"
+	"github.com/hanzohasashi17/blog-api/internal/database/postgres"
 	"github.com/hanzohasashi17/blog-api/internal/handlers"
 	"github.com/hanzohasashi17/blog-api/internal/repositories"
 	"github.com/hanzohasashi17/blog-api/internal/services"
-	"github.com/hanzohasashi17/blog-api/internal/database/sqlite"
 	"github.com/hanzohasashi17/blog-api/lib/logger/sl"
 )
 
@@ -22,12 +22,12 @@ func main() {
 	log := sl.SetupLogger()
 
 	// run database && migration
-	db, err := sqlite.New(cfg.StoragePath)
+	db, err := postgres.New(cfg.Database)
 	if err != nil {
-		log.Error("failed to init storage", sl.Err(err))
+		log.Error("failed to init database", sl.Err(err))
 		os.Exit(1)
 	}
-	defer db.Db.Close()
+	defer db.Close()
 
 	postRepository := repositories.NewPostRepository(db)
 	postService := services.NewPostService(postRepository)

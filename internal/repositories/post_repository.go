@@ -1,12 +1,14 @@
 package repositories
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"fmt"
 
 	"github.com/hanzohasashi17/blog-api/internal/models"
-	"github.com/hanzohasashi17/blog-api/internal/database/sqlite"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type IPostRepository interface {
@@ -19,40 +21,34 @@ type IPostRepository interface {
 }
 
 type postRepository struct {
-	db *sql.DB
+	db *pgxpool.Pool
 }
 
-func NewPostRepository(db *sqlite.Database) *postRepository {
-	return &postRepository{db: db.Db}
+func NewPostRepository(db *pgxpool.Pool) *postRepository {
+	return &postRepository{db: db}
 }
 
+// NEW POST +
 func (r *postRepository) Create(title string, content string, author string) (int64, error) {
 	op := "repositories.post.Create"
 
-	stmt, err := r.db.Prepare("INSERT INTO posts(title, content, author) VALUES(?, ?, ?)")
+	var newPostId int64
+
+	err := r.db.QueryRow(context.Background(), "INSERT INTO posts(title, content, author) VALUES($1, $2, $3) RETURNING id", title, content, author).Scan(&newPostId)
 	if err != nil {
 		return 0, fmt.Errorf("%s: %w", op, err)
 	}
 
-	res, err := stmt.Exec(title, content, author)
-	if err != nil {
-		return 0, fmt.Errorf("%s: %w", op, err)
-	}
-
-	id, err := res.LastInsertId()
-	if err != nil {
-		return 0, fmt.Errorf("%s: %w", op, err)
-	}
-
-	return id, nil
+	return newPostId, nil
 }
 
+// GET ALL POST +
 func (r *postRepository) GetAll(page, pageSize int) ([]models.Post, error) {
 	op := "repositories.post.GetAll"
 
 	offset := (page - 1) * pageSize
 
-	rows, err := r.db.Query("SELECT * FROM posts LIMIT ? OFFSET ?", pageSize, offset)
+	rows, err := r.db.Query(context.Background(), "SELECT * FROM posts LIMIT $1 OFFSET $2", pageSize, offset)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
@@ -73,12 +69,13 @@ func (r *postRepository) GetAll(page, pageSize int) ([]models.Post, error) {
 	return posts, nil
 }
 
+// GET POST BY ID +
 func (r *postRepository) GetById(id int) (*models.Post, error) {
 	op := "repositories.post.GetById"
 
 	var post models.Post
 
-	row := r.db.QueryRow("SELECT id, title, content, author, created_at FROM posts WHERE id = ?", id)
+	row := r.db.QueryRow(context.Background(), "SELECT id, title, content, author, created_at FROM posts WHERE id = $1", id)
 	err := row.Scan(&post.Id, &post.Title, &post.Content, &post.Author, &post.CreatedAt)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -90,10 +87,11 @@ func (r *postRepository) GetById(id int) (*models.Post, error) {
 	return &post, nil
 }
 
+// GET POST BY AUTHOR +
 func (r *postRepository) GetByAuthor(author string) ([]models.Post, error) {
 	op := "repositories.post.GetByAuthor"
 
-	rows, err := r.db.Query("SELECT * FROM posts WHERE author = ?", author)
+	rows, err := r.db.Query(context.Background(), "SELECT * FROM posts WHERE author = $1", author)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
@@ -114,41 +112,32 @@ func (r *postRepository) GetByAuthor(author string) ([]models.Post, error) {
 	return posts, nil
 }
 
+// UPDATE POST +
 func (r *postRepository) Update(post models.Post) error {
 	op := "repositories.post.Update"
 
-	res, err := r.db.Exec("UPDATE posts SET title=?, content=?, author=? WHERE id=?", post.Title, post.Content, post.Author, post.Id)
-	if err != nil {
-		return fmt.Errorf("%s: %w", op, err)
-	}
 
-	rowsAffected, err := res.RowsAffected()
+	_, err := r.db.Exec(context.Background(), "UPDATE posts SET title=$1, content=$2, author=$3 WHERE id=$4 RETURNING id", post.Title, post.Content, post.Author, post.Id)
 	if err != nil {
+		if err == pgx.ErrNoRows {
+			return fmt.Errorf("%s, post with id not found: %d", op, post.Id)
+		}
 		return fmt.Errorf("%s: %w", op, err)
-	}
-
-	if rowsAffected == 0 {
-		return errors.New("post not found")
 	}
 
 	return nil
 }
 
+// DELETE POST BY ID +
 func (r *postRepository) Delete(id int) error {
 	op := "repositories.post.Delete"
 
-	res, err := r.db.Exec("DELETE FROM posts WHERE id = ?", id)
+	_, err := r.db.Exec(context.Background(), "DELETE FROM posts WHERE id = $1", id)
 	if err != nil {
+		if err == pgx.ErrNoRows {
+			return fmt.Errorf("%s, post with id not found: %d", op, id)
+		}
 		return fmt.Errorf("%s: %w", op, err)
-	}
-
-	rowsAffected, err := res.RowsAffected()
-	if err != nil {
-		return fmt.Errorf("%s: %w", op, err)
-	}
-
-	if rowsAffected == 0 {
-		return errors.New("post not found")
 	}
 	
 	return nil

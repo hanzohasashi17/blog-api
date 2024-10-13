@@ -1,8 +1,14 @@
-////////////////////////////////////////
-TO RUN USE: docker-compose up -d
-TO CHECKING HANDLERS USE folder ./rest-client
+-------------------------------------
 
-////////////////////////////////////////
+TO RUN USE: docker-compose up -d
+
+
+TO CHECKING HANDLERS USE folder: ./rest-client
+
+
+-------------------------------------
+
+
 Задача: Разработать API блога с использованием Go, Chi router, SQLite (modernc.org/sqlite) и миграций.
 
 Требования:
@@ -37,3 +43,9 @@ CREATE TABLE posts (
     author TEXT NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+------------------------------------------
+
+Дополнено:
+- postgresql вместо sqlite
+- приложение развертывается через docker

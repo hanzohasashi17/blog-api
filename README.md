@@ -1,7 +1,8 @@
-TO RUN USE: "go run ./cmd/blog-api"
+////////////////////////////////////////
+TO RUN USE: docker-compose up -d
+TO CHECKING HANDLERS USE folder ./rest-client
 
-TO CHECKING HANDLERS USE folder "./rest-client"
-
+////////////////////////////////////////
 Задача: Разработать API блога с использованием Go, Chi router, SQLite (modernc.org/sqlite) и миграций.
 
 Требования:

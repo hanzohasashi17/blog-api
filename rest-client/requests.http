@@ -2,12 +2,11 @@ GET http://localhost:8080/posts?page=1&page_size=15 HTTP/1.1
 
 ###
 
-GET http://localhost:8080/posts?page=2 HTTP/1.1
-
+GET http://localhost:3000/posts?page=2 HTTP/1.1
 
 ###
 
-GET http://localhost:8080/posts/22 HTTP/1.1
+GET http://localhost:3000/posts/22 HTTP/1.1
 
 
 ###

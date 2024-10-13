@@ -1,0 +1,21 @@
+version: '3.7'
+
+services:
+  app:
+    build: .
+    container_name: app-container
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgresql
+
+  postgresql:
+    image: postgres:latest
+    container_name: postgresql-container
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - ./data:/var/lib/postgresql/data
+

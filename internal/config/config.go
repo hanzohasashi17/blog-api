@@ -30,7 +30,7 @@ type Database struct {
 func MustLoad() *Config {
 	var cfg Config
 
-	if err := cleanenv.ReadConfig("./config/local.yaml", &cfg); err != nil {
+	if err := cleanenv.ReadConfig("./local.yaml", &cfg); err != nil {
 		log.Fatalf("Can not read config: %s", err)
 	}
 
